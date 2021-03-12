@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// Home path will match only exact reference to "/"
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -23,14 +22,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		log.Println(err.Error())
+		app.errorLog.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
 
 	err = ts.Execute(w, nil)
 	if err != nil {
-		log.Println(err.Error())
+		app.errorLog.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)
 	}
 
@@ -38,7 +37,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func codebox(w http.ResponseWriter, r *http.Request) {
+func (app *application) codebox(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 
 	// Assert that id is an integer greater than 0
@@ -51,7 +50,7 @@ func codebox(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func createCodebox(w http.ResponseWriter, r *http.Request) {
+func (app *application) createCodebox(w http.ResponseWriter, r *http.Request) {
 	// Assert that request method is POST
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
@@ -62,6 +61,6 @@ func createCodebox(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Create a new codebox"))
 }
 
-func editCodebox(w http.ResponseWriter, r *http.Request) {
+func (app *application) editCodebox(w http.ResponseWriter, r *http.Request) {
 	return
 }
