@@ -1,11 +1,16 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
 func main() {
+
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	flag.Parse()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/codebox", codebox)
@@ -14,8 +19,8 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	log.Println("Server hosted on localhost: 4001")
-	err := http.ListenAndServe(":4001", mux)
+	log.Printf("Server hosted on localhost %s", *addr)
+	err := http.ListenAndServe(*addr, mux)
 	if err != nil {
 		panic(err)
 	}
